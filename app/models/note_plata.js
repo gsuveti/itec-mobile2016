@@ -3,16 +3,17 @@
 
 module.exports = function (sequelize, DataTypes) {
 
-  var NotaPlataLinii = sequelize.define('nota_plata_linii', {
+  var NotePlata = sequelize.define('note_plata', {
     tab_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
     },
-    nota_plata_id: DataTypes.INTEGER,
-    comanda_liv_id: DataTypes.INTEGER,
+    locatii_id: DataTypes.INTEGER,
     valoare_tot: DataTypes.DECIMAL,
-    canntitate: DataTypes.DECIMAL
+    operare: DataTypes.DATE,
+    clienti_id: DataTypes.INTEGER,
+    discount: DataTypes.DECIMAL
   }, {
     timestamps: false,
     classMethods: {
@@ -23,6 +24,6 @@ module.exports = function (sequelize, DataTypes) {
     }
   });
 
-  return NotaPlataLinii;
+  return NotePlata;
 };
 

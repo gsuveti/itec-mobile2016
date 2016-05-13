@@ -31,7 +31,7 @@ router.post('/user', function (req, res, next) {
     }
   }).then(function (users) {
     if (users && users[0]) {
-      return res.json({status: 'ok', userId: users[0]['tab_id']});
+      return res.json({status: 'ok', user_id: users[0]['tab_id']});
     } else {
       return res.json({status: 'not_found', message: 'email or password not ok'});
     }

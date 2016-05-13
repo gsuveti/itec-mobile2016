@@ -3,7 +3,7 @@
 
 module.exports = function (sequelize, DataTypes) {
 
-  var NotaPlataIncasate = sequelize.define('nota_plata_incasate', {
+  var NotePlataIncasate = sequelize.define('note_plata_incasate', {
     tab_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -22,6 +22,6 @@ module.exports = function (sequelize, DataTypes) {
     }
   });
 
-  return NotaPlataIncasate;
+  return NotePlataIncasate;
 };
 
