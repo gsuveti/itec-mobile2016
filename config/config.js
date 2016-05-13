@@ -9,7 +9,7 @@ var config = {
       name: 'express-postresql'
     },
     port: process.env.PORT || 3000,
-    db: 'postgres://postgres@localhost/itec',
+    db: 'postgres://postgres@localhost/rest1',
     omitNull: true
   },
 

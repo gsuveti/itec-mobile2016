@@ -3,15 +3,16 @@
 
 module.exports = function (sequelize, DataTypes) {
 
-  var ComenziLiniiLivrat = sequelize.define('comenzi_linii_livrat', {
+  var ComenziLiniiNeincasat = sequelize.define('comenzi_linii_neincasat', {
     tab_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
     },
-    comenzi_linii_id: DataTypes.INTEGER,
+    comenzi_linii_livrat_id: DataTypes.INTEGER,
     cantitate: DataTypes.INTEGER,
-    operare: DataTypes.DATE
+    operare: DataTypes.DATE,
+    locatii_id: DataTypes.INTEGER
   }, {
     timestamps: false,
     classMethods: {
@@ -22,6 +23,6 @@ module.exports = function (sequelize, DataTypes) {
     }
   });
 
-  return ComenziLiniiLivrat;
+  return ComenziLiniiNeincasat;
 };
 
