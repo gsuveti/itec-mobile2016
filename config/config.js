@@ -9,7 +9,7 @@ var config = {
       name: 'express-postresql'
     },
     port: process.env.PORT || 3000,
-    db: 'postgres://tdr:parola2016@mobile.itec.ligaac.ro/rest1',
+    db: 'postgres://tdr:parola2016@localhost/rest1',
     omitNull: true
   },
 
