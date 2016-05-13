@@ -106,22 +106,26 @@ router.get('/deliver/:orderId', function (req, res, next) {
 });
 
 
-router.get('/bill', function (req, res, next) {
-  db.sequelize.query('SELECT' +
-      ' comenzi_linii.produse_id as product_id, ' +
-      ' comenzi_linii_livrat.tab_id as delivered_order_id, ' +
-      ' produse.denumire product_name, ' +
-      ' produse.pret unit_price, ' +
-      ' comenzi_linii.cantitate as quantity, ' +
-      ' comenzi_linii.cantitate * produse.pret as price' +
-      ' FROM comenzi_linii_livrat ' +
-      ' inner join comenzi_linii_neincasat on comenzi_linii_livrat.tab_id = comenzi_linii_neincasat.comenzi_linii_livrat_id' +
-      ' inner join comenzi_linii on comenzi_linii_id = comenzi_linii.tab_id' +
-      ' inner join comenzi on comenzi_id = comenzi.tab_id' +
-      ' inner join clienti on clienti_id = clienti.tab_id'+
-      ' inner join produse on produse_id = produse.tab_id'
-    )
-    .then(function (projects) {
-      res.json(projects[0]);
-    })
+router.get('/bill/:tableId', function (req, res, next) {
+  var tableId = req.params.tableId;
+  if (tableId) {
+    db.sequelize.query('SELECT' +
+        ' comenzi_linii.produse_id as product_id, ' +
+        ' comenzi_linii_livrat.tab_id as delivered_order_id, ' +
+        ' produse.denumire product_name, ' +
+        ' produse.pret unit_price, ' +
+        ' comenzi_linii.cantitate as quantity, ' +
+        ' comenzi_linii.cantitate * produse.pret as price' +
+        ' FROM comenzi_linii_livrat ' +
+        ' inner join comenzi_linii_neincasat on comenzi_linii_livrat.tab_id = comenzi_linii_neincasat.comenzi_linii_livrat_id' +
+        ' inner join comenzi_linii on comenzi_linii_id = comenzi_linii.tab_id' +
+        ' inner join comenzi on comenzi_id = comenzi.tab_id' +
+        ' inner join clienti on clienti_id = clienti.tab_id' +
+        ' inner join produse on produse_id = produse.tab_id' +
+        ' where comenzi.locatii_id = ' + tableId
+      )
+      .then(function (projects) {
+        res.json(projects[0]);
+      })
+  }
 });
