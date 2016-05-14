@@ -9,10 +9,10 @@ module.exports = function (sequelize, DataTypes) {
       autoIncrement: true,
       primaryKey: true
     },
-    nota_plata_id: DataTypes.INTEGER,
+    note_plata_id: DataTypes.INTEGER,
     comanda_liv_id: DataTypes.INTEGER,
     valoare_tot: DataTypes.DECIMAL,
-    canntitate: DataTypes.DECIMAL
+    cantitate: DataTypes.INTEGER
   }, {
     timestamps: false,
     classMethods: {

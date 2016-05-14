@@ -9,7 +9,7 @@ module.exports = function (sequelize, DataTypes) {
       autoIncrement: true,
       primaryKey: true
     },
-    nota_plata_id: DataTypes.INTEGER,
+    note_plata_id: DataTypes.INTEGER,
     operare: DataTypes.DATE,
     utilizator_id: DataTypes.INTEGER
   }, {
