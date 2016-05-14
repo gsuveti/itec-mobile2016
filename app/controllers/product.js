@@ -27,7 +27,7 @@ router.get('/products/:category_id', function (req, res, next) {
 
 router.get('/products', function (req, res, next) {
   db['produse'].findAll({
-    attributes: [['tab_id', 'id'],['denumire', 'description'],['imagini_id','image_src_id'],['clasificari_id','category_id']]
+    attributes: [['tab_id', 'id'],['denumire', 'description'],['imagini_id','image_src_id'],['clasificari_id','category_id'],['pret','price']]
   }).then(function (produse) {
     return res.json({status: 'ok', produse: produse});
   });
