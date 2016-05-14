@@ -129,17 +129,32 @@ router.get('/bill/:tableId', function (req, res, next) {
 });
 
 
-router.get('/table/:code', function (req, res, next) {
-  db['locatii'].findAll({
-      where: {
-        qr_code: req.params.code
-      }
-    })
-    .then(function (locations) {
-      res.json({status: 'ok', tableId: locations[0].tab_id});
-    })
-    .catch(function (error) {
-      res.json({status: 'error', error: error});
-    });
+router.post('/table', function (req, res, next) {
+  var where;
+  var tableCode = req.body;
+  if(tableCode){
+    where = {};
+    if(tableCode.qr){
+      where.qr_code =qr;
+    }
+    else if(tableCode.nfc){
+      where.qr_code =qr;
+    }
+  }
+  if(where) {
+    db['locatii'].findAll({
+        where: where
+      })
+      .then(function (locations) {
+        res.json({status: 'ok', tableId: locations[0].tab_id});
+      })
+      .catch(function (error) {
+        res.json({status: 'error', error: 'invalid qr or nfc'});
+      });
+  }
+  else{
+    return res.json(getError('no qr or nfc'))
+  }
+
 });
 
