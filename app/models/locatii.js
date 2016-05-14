@@ -8,9 +8,14 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       primaryKey: true
     },
+    parent_id: DataTypes.INTEGER,
+    pozitie_x: DataTypes.DECIMAL,
+    pozitie_y: DataTypes.DECIMAL,
+    dimensiune_x: DataTypes.DECIMAL,
+    dimensiune_y: DataTypes.DECIMAL,
     denumire: DataTypes.STRING,
     qr_code: DataTypes.STRING,
-    nfc: DataTypes.STRING,
+    nfc: DataTypes.STRING
   }, {
     timestamps: false,
     classMethods: {

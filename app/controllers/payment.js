@@ -13,7 +13,7 @@ function getError(message) {
   }
 }
 
-router.post('/payment/:userId/:tableId', function (req, res, next) {
+router.post('/pay/:userId/:tableId', function (req, res, next) {
   var orders = req.body;
 
   if (orders && orders.length > 0) {

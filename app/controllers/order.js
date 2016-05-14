@@ -13,81 +13,61 @@ function getError(message) {
   }
 }
 
-router.post('/order/:userId', function (req, res, next) {
-  var tableInfo = req.body;
-  var where = {};
-  if (tableInfo.qrCode) {
-    where.qr_code = tableInfo.qrCode;
-  }
-  else if (tableInfo.nfc) {
-    where.nfc = tableInfo.nfc;
+router.post('/order/:userId/:tableId', function (req, res, next) {
+  var orders = req.body;
+
+  if (orders && orders.length > 0) {
+    db['comenzi'].create(
+      {
+        operare: Date.now(),
+        livrat: false,
+        nfc: false,
+        clienti_id: req.params.userId,
+        locatii_id: req.params.tableId
+      }
+    ).then(function (savedOrder) {
+      var ordersPromises = [];
+
+      for (var order of orders) {
+        if (!order.productId || !order.quantity) {
+          return res.json(getError("you must enter a valid productId and the quantity"));
+        }
+
+        order.comenzi_id = savedOrder.tab_id;
+        order.livrat = false;
+        order.pret = 0;
+
+        order.produse_id = order.productId;
+        order.productId = undefined;
+
+        order.cantitate = order.quantity;
+        order.quantity = undefined;
+
+        order.preferinte = order.observations;
+        order.observations = undefined;
+
+        ordersPromises.push(
+          db['comenzi_linii'].create(
+            order
+          )
+        );
+      }
+      Promise.all(ordersPromises)
+        .then(function (orders) {
+          var ordersIds = [];
+          for (var order of orders) {
+            ordersIds.push(order.tab_id);
+          }
+          return res.json({status: 'ok', orders_ids: ordersIds});
+        })
+        .catch(function (error) {
+          return res.json(getError("productId is not valid"));
+        });
+    });
   }
   else {
-    return res.json(getError("you must enter a valid qr code or nfc"));
+    return res.json(getError("invalid qr code or nfc"));
   }
-
-  db['locatii'].findAll({
-    where: where
-  }).then(function (locations) {
-    if (orders && orders.length > 0) {
-      if (locations && locations.length > 0) {
-        db['comenzi'].create(
-          {
-            operare: Date.now(),
-            livrat: false,
-            nfc: false,
-            clienti_id: req.params.userId,
-            locatii_id: locations[0]
-          }
-        ).then(function (savedOrder) {
-          var ordersPromises = [];
-
-          for (var order of orders) {
-            if (!order.productId || !order.quantity) {
-              return res.json(getError("you must enter a valid productId and the quantity"));
-            }
-
-            order.comenzi_id = savedOrder.tab_id;
-            order.livrat = false;
-            order.pret = 0;
-
-            order.produse_id = order.productId;
-            order.productId = undefined;
-
-            order.cantitate = order.quantity;
-            order.quantity = undefined;
-
-            order.preferinte = order.observations;
-            order.observations = undefined;
-
-            ordersPromises.push(
-              db['comenzi_linii'].create(
-                order
-              )
-            );
-          }
-          Promise.all(ordersPromises)
-            .then(function (orders) {
-              var ordersIds = [];
-              for (var order of orders) {
-                ordersIds.push(order.tab_id);
-              }
-              return res.json({status: 'ok', orders_ids: ordersIds});
-            })
-            .catch(function (error) {
-              return res.json(getError("productId is not valid"));
-            });
-        });
-      }
-      else {
-        return res.json(getError("invalid qr code or nfc"));
-      }
-    }
-    else {
-      return res.json(getError("you have no products"));
-    }
-  });
-
 });
 
 router.get('/deliver/:orderId', function (req, res, next) {
@@ -125,46 +105,41 @@ router.get('/deliver/:orderId', function (req, res, next) {
   }
 });
 
-
-router.post('/bill', function (req, res, next) {
-  var tableId = req.params.tableId;
-
-  var tableInfo = req.body;
-  var where = {};
-  if (tableInfo.qrCode) {
-    where.qr_code = tableInfo.qrCode;
-  }
-  else if (tableInfo.nfc) {
-    where.nfc = tableInfo.nfc;
-  }
-  else {
-    return res.json(getError("you must enter a valid qr code or nfc"));
-  }
-
-  if (tableId) {
-    db['locatii'].findAll({
-      where: where
-    }).then(function (locations) {
-      if (locations && locations[0]) {
-        db.sequelize.query('SELECT' +
-            ' comenzi_linii.produse_id as product_id, ' +
-            ' comenzi_linii_livrat.tab_id as delivered_order_id, ' +
-            ' produse.denumire product_name, ' +
-            ' produse.pret unit_price, ' +
-            ' comenzi_linii.cantitate as quantity, ' +
-            ' comenzi_linii.cantitate * produse.pret as price' +
-            ' FROM comenzi_linii_livrat ' +
-            ' inner join comenzi_linii_neincasat on comenzi_linii_livrat.tab_id = comenzi_linii_neincasat.comenzi_linii_livrat_id' +
-            ' inner join comenzi_linii on comenzi_linii_id = comenzi_linii.tab_id' +
-            ' inner join comenzi on comenzi_id = comenzi.tab_id' +
-            ' inner join clienti on clienti_id = clienti.tab_id' +
-            ' inner join produse on produse_id = produse.tab_id' +
-            ' where comenzi.locatii_id = ' + locations[0]
-          )
-          .then(function (projects) {
-            res.json(projects[0]);
-          })
-      }
-    });
+router.get('/bill/:tableId', function (req, res, next) {
+  if (req.params.tableId) {
+    db.sequelize.query('SELECT' +
+        ' comenzi_linii.produse_id as product_id, ' +
+        ' comenzi_linii_livrat.tab_id as delivered_order_id, ' +
+        ' produse.denumire product_name, ' +
+        ' produse.pret unit_price, ' +
+        ' comenzi_linii.cantitate as quantity, ' +
+        ' comenzi_linii.cantitate * produse.pret as price' +
+        ' FROM comenzi_linii_livrat ' +
+        ' inner join comenzi_linii_neincasat on comenzi_linii_livrat.tab_id = comenzi_linii_neincasat.comenzi_linii_livrat_id' +
+        ' inner join comenzi_linii on comenzi_linii_id = comenzi_linii.tab_id' +
+        ' inner join comenzi on comenzi_id = comenzi.tab_id' +
+        ' inner join clienti on clienti_id = clienti.tab_id' +
+        ' inner join produse on produse_id = produse.tab_id' +
+        ' where comenzi.locatii_id = ' + req.params.tableId
+      )
+      .then(function (projects) {
+        res.json(projects[0]);
+      })
   }
 });
+
+
+router.get('/table/:code', function (req, res, next) {
+  db['locatii'].findAll({
+      where: {
+        qr_code: req.params.code
+      }
+    })
+    .then(function (locations) {
+      res.json({status: 'ok', tableId: locations[0].tab_id});
+    })
+    .catch(function (error) {
+      res.json({status: 'error', error: error});
+    });
+});
+
