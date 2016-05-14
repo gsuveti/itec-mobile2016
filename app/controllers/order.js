@@ -132,16 +132,16 @@ router.get('/bill/:tableId', function (req, res, next) {
 router.post('/table', function (req, res, next) {
   var where;
   var tableCode = req.body;
-  if(tableCode){
+  if (tableCode) {
     where = {};
-    if(tableCode.qr){
-      where.qr_code =qr;
+    if (tableCode.qr) {
+      where.qr_code = tableCode.qr;
     }
-    else if(tableCode.nfc){
-      where.qr_code =qr;
+    else if (tableCode.nfc) {
+      where.nfc = tableCode.nfc;
     }
   }
-  if(where) {
+  if (where) {
     db['locatii'].findAll({
         where: where
       })
@@ -152,7 +152,7 @@ router.post('/table', function (req, res, next) {
         res.json({status: 'error', error: 'invalid qr or nfc'});
       });
   }
-  else{
+  else {
     return res.json(getError('no qr or nfc'))
   }
 
