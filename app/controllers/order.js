@@ -66,7 +66,7 @@ router.post('/order/:userId/:tableId', function (req, res, next) {
     });
   }
   else {
-    return res.json(getError("invalid qr code or nfc"));
+    return res.json(getError("no orders"));
   }
 });
 
