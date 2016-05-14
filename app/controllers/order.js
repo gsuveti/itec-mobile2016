@@ -114,8 +114,9 @@ router.get('/bill/:tableId', function (req, res, next) {
         ' produse.pret unit_price, ' +
         ' comenzi_linii.cantitate as quantity, ' +
         ' comenzi_linii.cantitate * produse.pret as price, ' +
-        ' clienti.nick, ' +
-        ' clienti.email ' +
+        ' clienti.nick as name, ' +
+        ' clienti.email as email, ' +
+        ' clienti.tab_id as client_id ' +
         ' FROM comenzi_linii_livrat ' +
         ' inner join comenzi_linii_neincasat on comenzi_linii_livrat.tab_id = comenzi_linii_neincasat.comenzi_linii_livrat_id' +
         ' inner join comenzi_linii on comenzi_linii_id = comenzi_linii.tab_id' +
